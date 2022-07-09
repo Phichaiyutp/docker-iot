@@ -12,30 +12,31 @@ services:
       - ./data/portainer:/data
     ports:
       - 9000:9000
+
   node-red:
-    image: nodered/node-red:2.2.2-12
+    image: nodered/node-red:latest
     container_name: node-red
-    network_mode: "host"
+   # user: uid:group
+    networks:
+      - iot-net
     ports:
-     - "1880:1880"
+      - 1880:1880
     volumes:
-     - ./data/node-red:/data
-    depends_on: #จะเปิดได้ก็ต่อเมื่อ
-     - mqtt 
+      - ./data/node-red:/data
     restart: always #เปิดทุกครั้งที่เปิดเครื่อง
 
   mqtt:
     image: eclipse-mosquitto:2.0.14
     container_name: mosquitto
-    network_mode: "host"
+    networks:
+      - iot-net
     ports:
-      - "1883:1883"
-      - "9001:9001"
+      - 1883:1883
+      - 9001:9001
     volumes:
       - ./data/mqtt/config:/mosquitto/config
       - ./data/mqtt/data:/mosquitto/data
       - ./data/mqtt/log:/mosquitto/log
     restart: always
-   
-
-   
+networks:
+  iot-net:
