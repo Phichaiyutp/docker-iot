@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped #เปิดตลอดเวลา
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/portainer:/data
+    ports:
+      - 9000:9000
+  node-red:
+    image: nodered/node-red:2.2.2-12
+    container_name: node-red
+    network_mode: "host"
+    ports:
+     - "1880:1880"
+    volumes:
+     - ./data/node-red:/data
+    depends_on: #จะเปิดได้ก็ต่อเมื่อ
+     - mqtt 
+    restart: always #เปิดทุกครั้งที่เปิดเครื่อง
+
+  mqtt:
+    image: eclipse-mosquitto:2.0.14
+    container_name: mosquitto
+    network_mode: "host"
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./data/mqtt/config:/mosquitto/config
+      - ./data/mqtt/data:/mosquitto/data
+      - ./data/mqtt/log:/mosquitto/log
+    restart: always
+   
+
+   
